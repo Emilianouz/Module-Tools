@@ -1,20 +1,19 @@
-import sys
+import argparse
 import os
 
 def main():
-    args = sys.argv[1:]
-    
-    path = "."
-    one_per_line = False
-    show_hidden = False
-    
-    for arg in args:
-        if arg == "-a":
-            show_hidden = True
-        elif arg == "-1":
-            one_per_line = True
-        elif not arg.startswith("-"):
-            path = arg
+    parser = argparse.ArgumentParser(description=" ls in Python")
+
+    parser.add_argument("path", nargs="?", default=".", help="Directory to list")
+    parser.add_argument("-a", action="store_true", help="Show hidden files")
+    parser.add_argument("-1", dest="one_per_line", action="store_true",
+                        help="List one file per line")
+
+    args = parser.parse_args()
+
+    path = args.path
+    show_hidden = args.a
+    one_per_line = args.one_per_line
 
     entries = os.listdir(path)
 
