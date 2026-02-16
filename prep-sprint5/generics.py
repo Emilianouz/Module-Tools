@@ -13,9 +13,11 @@ aisha = Person(name="Aisha", age=30, children=[])
 imran = Person(name="Imran", age=50, children=[fatma, aisha])
 maria = Person(name="maria", age=38,children=[fatma])
 
-def print_family_tree(person: Person) -> None:
-    print(person.name)
+def print_family_tree(person: Person, level: int = 0) -> None:
+    indent = "  " * level
+    print(f"{indent}{person.name} ({person.age})")
+    
     for child in person.children:
-        print(f"- {child.name} ({child.age})")
+        print_family_tree(child, level + 1)
 
 print_family_tree(maria)
