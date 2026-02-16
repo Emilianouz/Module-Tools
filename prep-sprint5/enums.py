@@ -15,6 +15,7 @@ stderr and terminate the program with a non-zero exit code if the user input bad
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
+import sys
 
 class OperatingSystem(Enum):
     MACOS = "macOS"
@@ -63,7 +64,13 @@ for laptop in laptops:
 
 # receiving values from input to create person:
 name = input("Enter your name: ")
-age = int(input("Enter your age: "))
+
+try:
+    age_input = input("Enter your age: ")
+    age = int(age_input)
+except ValueError:
+    print("Error: Age must be a number.", file=sys.stderr)
+    sys.exit(1)
 
 print("Choose preferred operating system:")
 print("1. macOS")
@@ -79,9 +86,17 @@ os_map = {
 
 preferred_os = os_map.get(choice)
 
+if preferred_os is None:
+    print("Error: Invalid operating system selection.", file=sys.stderr)
+    sys.exit(1)
+
 person = Person(name=name, age=age, preferred_operating_system=preferred_os)
 
-print("Created person:", person)
+print(
+    f"\nWelcome {person.name}! "
+    f"Age: {person.age}, "
+    f"Preferred OS: {person.preferred_operating_system.value}"
+)
 # counts how many laptops there are with that OS
 matches_count = sum(
     1 for laptop in laptops
