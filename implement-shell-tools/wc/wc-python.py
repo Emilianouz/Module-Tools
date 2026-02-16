@@ -1,4 +1,4 @@
-import sys
+import argparse
 
 def count_file(filename):
    
@@ -27,20 +27,19 @@ def format_output(lines, words, chars, filename, show_l, show_w, show_c):
     return " ".join(parts)
 
 def main():
-    args = sys.argv[1:]
-    
-    l = w = c = False
-    files = []
-    
-    for arg in args:
-        if arg == "-l":
-            l = True
-        elif arg == "-w":
-            w = True
-        elif arg == "-c":
-            c = True
-        elif not arg.startswith("-"):
-            files.append(arg)
+    parser = argparse.ArgumentParser(description="wc imlementation in Python")
+
+    parser.add_argument("files", nargs="+", help="Files to process")
+    parser.add_argument("-l", action="store_true", help="Show line count")
+    parser.add_argument("-w", action="store_true", help="Show word count")
+    parser.add_argument("-c", action="store_true", help="Show character count")
+
+    args = parser.parse_args()
+
+    l = args.l
+    w = args.w
+    c = args.c
+    files = args.files
     
     if not (l or w or c):
         l = w = c = True
