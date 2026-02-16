@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 def cat_file(filename, flag):
     try:
@@ -24,18 +25,24 @@ def cat_file(filename, flag):
         print(f"cat: {filename}: No such file or directory", file=sys.stderr)
     
 def main():
-    args = sys.argv[1:]
+    parser = argparse.ArgumentParser(description="Simple cat clone")
 
-    flag = False 
-    
-    if "-n" in args:
+    parser.add_argument("filenames", nargs="+",
+                        help="Files to display")
+    parser.add_argument("-n", action="store_true",
+                        help="Number all output lines")
+    parser.add_argument("-b", action="store_true",
+                        help="Number non-blank output lines")
+
+    args = parser.parse_args()
+
+    flag = False
+    if args.n:
         flag = "-n"
-        args.remove("-n")
-    elif "-b" in args:
+    elif args.b:
         flag = "-b"
-        args.remove("-b")
 
-    for filename in args:
+    for filename in args.filenames:
         cat_file(filename, flag)
 
 if __name__ == "__main__":
