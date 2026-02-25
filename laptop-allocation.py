@@ -31,18 +31,52 @@ class Laptop:
     operating_system: OperatingSystem
     assigned: bool = False
 
+# sadnes calculator
+def calculate_sadness(person: Person, laptop: Laptop) -> int:
+    if laptop.operating_system in person.preferred_operating_system:
+        return person.preferred_operating_system.index(laptop.operating_system)
+    return 100
+
 def allocate_laptops(people: List[Person], laptops: List[Laptop]) -> Dict[str, int]:
-    allocation = {}
-    for person in people:
-        for os in person.preferred_operating_system:
-            for laptop in laptops:
-                if (laptop.operating_system == os and not laptop.assigned):
-                    allocation[person.name] = laptop.id
-                    assigned = True
-                    break
-            if assigned:
-                break
-    return allocation
+    best_allocation: Dict[str, int] = {}
+    min_total_sadness = float("inf")
+
+    def backtrack(person_index: int, used_laptops: set, current_alloc: Dict[str, int], current_sadness: int):
+        nonlocal best_allocation, min_total_sadness
+
+        # If all people assigned
+        if person_index == len(people):
+            if current_sadness < min_total_sadness:
+                min_total_sadness = current_sadness
+                best_allocation = current_alloc.copy()
+            return
+
+        # stop if worse than best
+        if current_sadness >= min_total_sadness:
+            return
+
+        person = people[person_index]
+
+        for laptop in laptops:
+            if laptop.id not in used_laptops:
+                sadness = calculate_sadness(person, laptop)
+
+                used_laptops.add(laptop.id)
+                current_alloc[person.name] = laptop.id
+
+                backtrack(
+                    person_index + 1,
+                    used_laptops,
+                    current_alloc,
+                    current_sadness + sadness
+                )
+
+                # Undo choice
+                used_laptops.remove(laptop.id)
+                del current_alloc[person.name]
+
+    backtrack(0, set(), {}, 0)
+    return best_allocation
 
 people = [
     Person(name="Imran", age=22, preferred_operating_system=[OperatingSystem.UBUNTU,OperatingSystem.ARCH,OperatingSystem.MACOS]),
