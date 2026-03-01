@@ -37,11 +37,11 @@ def calculate_sadness(person: Person, laptop: Laptop) -> int:
         return person.preferred_operating_system.index(laptop.operating_system)
     return 100
 
-def allocate_laptops(people: List[Person], laptops: List[Laptop]) -> Dict[str, int]:
-    best_allocation: Dict[str, int] = {}
+def allocate_laptops(people: List[Person], laptops: List[Laptop]) -> Dict[Person, Laptop]:
+    best_allocation: Dict[Person, Laptop] = {}
     min_total_sadness = float("inf")
 
-    def backtrack(person_index: int, used_laptops: set, current_alloc: Dict[str, int], current_sadness: int):
+    def backtrack(person_index: int, used_laptops: set, current_alloc: Dict[Person, Laptop], current_sadness: int):
         nonlocal best_allocation, min_total_sadness
 
         # If all people assigned
@@ -62,7 +62,7 @@ def allocate_laptops(people: List[Person], laptops: List[Laptop]) -> Dict[str, i
                 sadness = calculate_sadness(person, laptop)
 
                 used_laptops.add(laptop.id)
-                current_alloc[person.name] = laptop.id
+                current_alloc[person] = laptop
 
                 backtrack(
                     person_index + 1,
@@ -73,7 +73,7 @@ def allocate_laptops(people: List[Person], laptops: List[Laptop]) -> Dict[str, i
 
                 # Undo choice
                 used_laptops.remove(laptop.id)
-                del current_alloc[person.name]
+                del current_alloc[person]
 
     backtrack(0, set(), {}, 0)
     return best_allocation
